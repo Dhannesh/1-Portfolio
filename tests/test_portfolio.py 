@@ -6,6 +6,8 @@ def soup():
     with open("index.html", encoding="utf-8") as f:
         return BeautifulSoup(f, "html.parser")
 
+# === Individual Requirement Tests ===
+
 def test_document_structure(soup):
     assert soup.find("html"), "Missing <html> tag"
     assert soup.find("head"), "Missing <head> tag"
@@ -56,3 +58,58 @@ def test_title_contains_name(soup):
     assert title_tag, "Missing <title> tag in <head>"
     assert "Student" not in title_tag.text, "Replace 'Student Name' with your actual name in <title>"
     assert len(title_tag.text.strip()) > 0, "Title cannot be empty – include your name!"
+
+
+# ✅ AUTOGRADING SUMMARY TEST
+def test_autograding_summary(soup):
+    """
+    Autograding summary – assigns points for each requirement.
+    This test always passes, but prints a grade summary.
+    """
+    score = 0
+    total = 10  # 8 core (1 mark each) + 1 bonus (2 marks)
+
+    # Document structure
+    if soup.find("html") and soup.find("head") and soup.find("body"):
+        score += 1
+
+    # Header & footer
+    if soup.find("header") and soup.find("footer"):
+        score += 1
+
+    # Navigation
+    nav = soup.find("nav")
+    if nav and len(nav.find_all("a")) >= 3:
+        score += 1
+
+    # About Me
+    about = soup.find(id="about")
+    if about and about.find("h2") and len(about.find_all("p")) >= 2:
+        score += 1
+
+    # Skills
+    skills = soup.find(id="skills")
+    if skills and len(skills.find_all("li")) >= 3:
+        score += 1
+
+    # Projects table
+    table = soup.find("table")
+    if table and len(table.find_all("tr")) >= 2:
+        score += 1
+
+    # Contact form
+    form = soup.find("form")
+    if form and form.find("input", {"type": "text"}) and form.find("input", {"type": "email"}) and form.find("button"):
+        score += 1
+
+    # Image
+    if soup.find("img"):
+        score += 1
+
+    # Bonus: Title has actual name (2 marks)
+    title_tag = soup.find("title")
+    if title_tag and "Student" not in title_tag.text and len(title_tag.text.strip()) > 0:
+        score += 2
+
+    print(f"\n=== AUTOGRADING SUMMARY ===\nScore: {score}/{total}\n")
+    assert True, f"Autograding completed. Score: {score}/{total}"
