@@ -1,0 +1,58 @@
+import pytest
+from bs4 import BeautifulSoup
+
+@pytest.fixture
+def soup():
+    with open("index.html", encoding="utf-8") as f:
+        return BeautifulSoup(f, "html.parser")
+
+def test_document_structure(soup):
+    assert soup.find("html"), "Missing <html> tag"
+    assert soup.find("head"), "Missing <head> tag"
+    assert soup.find("body"), "Missing <body> tag"
+
+def test_header_and_footer(soup):
+    assert soup.find("header"), "Portfolio must have a <header>"
+    assert soup.find("footer"), "Portfolio must have a <footer>"
+
+def test_navigation(soup):
+    nav = soup.find("nav")
+    assert nav, "Missing <nav> navigation"
+    links = nav.find_all("a")
+    assert len(links) >= 3, "Navigation must have at least 3 links"
+
+def test_about_me_section(soup):
+    about = soup.find(id="about")
+    assert about, "Missing About Me section with id='about'"
+    assert about.find("h2"), "About section missing heading"
+    paragraphs = about.find_all("p")
+    assert len(paragraphs) >= 2, "About section must have at least 2 <p> paragraphs"
+
+def test_skills_list(soup):
+    skills = soup.find(id="skills")
+    assert skills, "Missing Skills section with id='skills'"
+    items = skills.find_all("li")
+    assert len(items) >= 3, "Skills list must have at least 3 items"
+
+def test_projects_table(soup):
+    table = soup.find("table")
+    assert table, "Missing <table> for projects/experience"
+    rows = table.find_all("tr")
+    assert len(rows) >= 2, "Table must have at least 1 header row and 1 data row"
+
+def test_contact_form(soup):
+    form = soup.find("form")
+    assert form, "Missing <form> in contact section"
+    assert form.find("input", {"type": "text"}), "Form must have a text input (name)"
+    assert form.find("input", {"type": "email"}), "Form must have an email input"
+    assert form.find("button"), "Form must have a <button> to submit"
+
+def test_image_present(soup):
+    assert soup.find("img"), "Portfolio must include at least one <img> (profile or project)"
+
+# 🚀 BONUS TEST
+def test_title_contains_name(soup):
+    title_tag = soup.find("title")
+    assert title_tag, "Missing <title> tag in <head>"
+    assert "Student" not in title_tag.text, "Replace 'Student Name' with your actual name in <title>"
+    assert len(title_tag.text.strip()) > 0, "Title cannot be empty – include your name!"
